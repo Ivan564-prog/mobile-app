@@ -8,15 +8,23 @@ class CommandRunner {
   final Map<String, Command> _commands = <String, Command>{};
   FutureOr<void> Function(Object)? onError;
 
+  CommandRunner({this.onOutput, this.onError});
+
+  FutureOr<void> Function(String)? onOutput;
+
   UnmodifiableSetView<Command> get commands =>
-      UnmodifiableSetView<Command>(<Command>{..._commands.values});
+    UnmodifiableSetView<Command>(<Command>{..._commands.values});
 
   Future<void> run(List<String> input) async {
   try {
     final ArgResults results = parse(input);
     if (results.command != null) {
       Object? output = await results.command!.run(results);
-      print(output.toString());
+      if (onOutput != null) {
+        await onOutput!(output.toString());
+      } else {
+        print(output.toString());
+      }
     }
   } on Exception catch (exception) {
     if (onError != null) {
@@ -25,7 +33,8 @@ class CommandRunner {
       rethrow;
     }
   }
-}
+  }
+
 
   void addCommand(Command command) {
     _commands[command.name] = command;
