@@ -60,7 +60,7 @@ packages:
   command_runner:
     dependency: "direct main"
     description:
-      path: command_runner
+      path: "../command_runner"
       relative: true
     source: path
     version: "1.0.0"
