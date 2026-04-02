@@ -17,13 +17,16 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          title: Align(alignment: Alignment.centerLeft, child: Text('Birdle')),
+        ),
         body: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               Tile('A', HitType.hit),     // зелёный
               SizedBox(width: 8),
-              Tile('A', HitType.partial), // жёлтый
+              Tile('B', HitType.partial), // жёлтый
               SizedBox(width: 8),
               Tile('A', HitType.miss),    // серый
             ],
@@ -58,6 +61,31 @@ class Tile extends StatelessWidget {
           letter.toUpperCase(),
           style: Theme.of(context).textTheme.titleLarge,
         ),
+      ),
+    );
+  }
+}
+
+class GamePage extends StatelessWidget {
+  GamePage({super.key});
+
+  final Game _game = Game();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        spacing: 5.0,
+        children: [
+          for (var guess in _game.guesses)
+            Row(
+              spacing: 5.0,
+              children: [
+                for (var letter in guess) Tile(letter.char, letter.type),
+              ],
+            ),
+        ],
       ),
     );
   }
