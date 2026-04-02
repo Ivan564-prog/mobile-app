@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:birdle/game.dart';
 
 void main() {
   runApp(const MainApp());
-}
-
-enum HitType {
-  hit,
-  partial,
-  miss,
 }
 
 class MainApp extends StatelessWidget {
@@ -17,25 +12,16 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
+         appBar: AppBar(
           title: Align(alignment: Alignment.centerLeft, child: Text('Birdle')),
         ),
-        body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Tile('A', HitType.hit),     // зелёный
-              SizedBox(width: 8),
-              Tile('B', HitType.partial), // жёлтый
-              SizedBox(width: 8),
-              Tile('A', HitType.miss),    // серый
-            ],
-          ),
-        ),
+        body: Center(child: GamePage()),
       ),
     );
   }
 }
+
+
 
 class Tile extends StatelessWidget {
   const Tile(this.letter, this.hitType, {super.key});
@@ -54,21 +40,15 @@ class Tile extends StatelessWidget {
           HitType.hit => Colors.green,
           HitType.partial => Colors.yellow,
           HitType.miss => Colors.grey,
+          _ => Colors.white,
         },
-      ),
-      child: Center(
-        child: Text(
-          letter.toUpperCase(),
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
       ),
     );
   }
 }
 
-class GamePage extends StatelessWidget {
-  GamePage({super.key});
 
+class GamePage extends StatelessWidget {
   final Game _game = Game();
 
   @override
@@ -85,8 +65,77 @@ class GamePage extends StatelessWidget {
                 for (var letter in guess) Tile(letter.char, letter.type),
               ],
             ),
+          GuessInput(
+            onSubmitGuess: (String guess) {
+              // TODO, handle guess
+              print(guess); // Temporary
+            },
+          ),
         ],
       ),
     );
   }
 }
+
+
+class GuessInput extends StatelessWidget {
+  GuessInput({super.key, required this.onSubmitGuess});
+
+  final void Function(String) onSubmitGuess;
+
+  final TextEditingController _textEditingController = TextEditingController();
+
+  final FocusNode _focusNode = FocusNode();
+
+  void _onSubmit() {
+    onSubmitGuess(_textEditingController.text);
+    _textEditingController.clear();
+    _focusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              maxLength: 5,
+              focusNode: _focusNode,
+              autofocus: true,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(35)),
+                ),
+              ),
+              controller: _textEditingController,
+              onSubmitted: (String value) {
+                _onSubmit();
+              },
+            ),
+          ),
+        ),
+        IconButton(
+          padding: EdgeInsets.zero,
+          icon: const Icon(Icons.arrow_circle_up),
+          onPressed: _onSubmit,
+        ),
+      ],
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
